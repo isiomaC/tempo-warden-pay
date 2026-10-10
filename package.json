@@ -1,0 +1,54 @@
+{
+  "name": "@stlw/warden-pay",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "warden-pay-mcp": "./dist/mcp.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "merchant": "node --env-file=.env --import tsx src/merchant.ts",
+    "api": "node --env-file=.env --import tsx src/api.ts",
+    "pay": "node --env-file=.env --import tsx src/pay.ts",
+    "mcp": "node --import tsx src/mcp.ts",
+    "test": "node --import tsx --test test/*.test.mjs",
+    "test:db": "node --env-file=.env --import tsx --test test/storage.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "db:up": "docker compose up -d db",
+    "db:migrate": "docker compose exec -T db psql -U warden -d warden < db/001_init.sql"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@stlw/warden": "^0.2.7",
+    "hono": "^4.9.0",
+    "mppx": "^0.8.17",
+    "pg": "^8.16.3",
+    "viem": "^2.37.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.15.5",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}

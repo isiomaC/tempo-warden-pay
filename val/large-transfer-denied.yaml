@@ -1,0 +1,61 @@
+id: warden-pay-large-transfer-denied
+product: Warden Pay
+claim: A disallowed MPP payment is denied before settlement and leaves verifiable audit evidence.
+timeoutMs: 150000
+tags: [live, no-spend]
+steps:
+  - name: merchant health
+    http:
+      method: GET
+      url: http://127.0.0.1:8787/health
+    expect:
+      - status: 200
+      - jsonPath: $.ok
+        equals: true
+
+  - name: dashboard API health
+    http:
+      method: GET
+      url: http://127.0.0.1:8788/
+    expect:
+      - status: 200
+      - stdoutContains: Authorize agent payments
+
+  - name: policy rejects large transfer
+    run: cd "${cwd}" && npm run pay -- large-transfer
+    timeoutMs: 90000
+    expect:
+      - not:
+          exitCode: 0
+      - outputContains: "Payment deny:"
+      - outputContains: PURPOSE_NOT_ALLOWED
+
+  - name: denied intent has no settlement
+    run: >-
+      cd "${cwd}" && node --env-file=.env --input-type=module -e
+      'import pg from "pg"; const pool = new pg.Pool({ connectionString:
+      process.env.DATABASE_URL }); const { rows: [row] } = await pool.query(
+      "SELECT p.id, p.status, p.outcome, p.reason_codes, (s.intent_id IS NOT NULL)
+      AS has_settlement FROM payment_intents p LEFT JOIN settlements s ON
+      s.intent_id = p.id ORDER BY p.created_at DESC LIMIT 1"); console.log(JSON.stringify(row));
+      await pool.end()'
+    capture:
+      intentId: json:$.id
+    expect:
+      - jsonPath: $.status
+        equals: denied
+      - jsonPath: $.outcome
+        equals: deny
+      - jsonPath: $.has_settlement
+        equals: false
+      - jsonPath: $.reason_codes
+        exists: true
+
+  - name: denied intent audit signature verifies
+    http:
+      method: GET
+      url: http://127.0.0.1:8788/v1/audit/${captures.intentId}/verify
+    expect:
+      - status: 200
+      - jsonPath: $.valid
+        equals: true

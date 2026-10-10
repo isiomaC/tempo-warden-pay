@@ -1,0 +1,50 @@
+id: warden-pay-browser-session-settled
+product: Warden Pay
+claim: An allowed MPP purchase settles on Tempo and produces a verifiable audit record.
+timeoutMs: 240000
+tags: [live, spends-testnet-funds]
+steps:
+  - name: merchant and dashboard are available
+    http:
+      method: GET
+      url: http://127.0.0.1:8787/health
+    expect:
+      - status: 200
+      - jsonPath: $.ok
+        equals: true
+
+  - name: make one browser-session payment
+    run: cd "${cwd}" && npm run pay
+    timeoutMs: 180000
+    capture:
+      transactionHash: 'regex:"transactionHash":"(0x[0-9a-fA-F]{64})"'
+    expect:
+      - exitCode: 0
+      - outputContains: "HTTP status: 200"
+      - outputContains: "Audit verified: true"
+
+  - name: persisted settlement matches the transaction
+    run: >-
+      cd "${cwd}" && node --env-file=.env --input-type=module -e
+      'import pg from "pg"; const pool = new pg.Pool({ connectionString:
+      process.env.DATABASE_URL }); const { rows: [row] } = await pool.query(
+      "SELECT p.id, p.status, s.tx_hash FROM payment_intents p JOIN settlements s
+      ON s.intent_id = p.id WHERE p.status = $$settled$$ ORDER BY p.created_at DESC
+      LIMIT 1"); console.log(JSON.stringify(row)); await pool.end()'
+    capture:
+      intentId: json:$.id
+      transactionHashDb: json:$.tx_hash
+    expect:
+      - jsonPath: $.status
+        equals: settled
+      - jsonPath: $.tx_hash
+        equals: ${captures.transactionHash}
+
+  - name: exported audit verifies for that intent
+    http:
+      method: GET
+      url: http://127.0.0.1:8788/v1/audit/${captures.intentId}/verify
+    expect:
+      - status: 200
+      - jsonPath: $.valid
+        equals: true

@@ -1,0 +1,3 @@
+[mcp_servers.warden_pay]
+command = "node"
+args = ["--import", "tsx", "src/mcp.ts"]

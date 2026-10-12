@@ -1,6 +1,6 @@
 # Warden Pay
 
-![Warden Pay logo](assets/warden-pay-logo.png)
+<img src="assets/warden-pay-logo.png" alt="Warden Pay logo" width="128" />
 
 Authorization infrastructure for autonomous payments. Tempo moves the money; Warden proves it was allowed to move.
 

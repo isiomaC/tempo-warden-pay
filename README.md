@@ -97,4 +97,4 @@ For a **no-spend policy denial**, ask the agent to request `large-transfer`. Pol
 
 The `browser-session` service costs 3.20 pathUSD and can settle without human approval. Do not request it unless you intend to spend testnet funds. Never configure the agent host to auto-approve Warden payment requests; dashboard approval is the human control.
 
-See the [Colosseum submission and recording materials](https://github.com/isiomaC/stalewell-docs/tree/main/hackathons/colosseum-2026/warden-pay) and [SECURITY.md](SECURITY.md) for the audit guarantee and its limits.
+See [SECURITY.md](SECURITY.md) for the audit guarantee and its limits.

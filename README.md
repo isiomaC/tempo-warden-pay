@@ -1,5 +1,7 @@
 # Warden Pay
 
+![Warden Pay logo](assets/warden-pay-logo.png)
+
 Authorization infrastructure for autonomous payments. Tempo moves the money; Warden proves it was allowed to move.
 
 This project builds on [`@stlw/warden`](https://www.npmjs.com/package/@stlw/warden), an MIT-licensed policy and audit foundation. Warden Pay adds payment-specific rules, durable budget reservations, signed permits bound to MPP challenges, Tempo settlement, and the demo application. The Colosseum rules retain entrant IP and require entrants to disclose the status and ownership of third-party code included in a submission; see [the official rules, section 9](https://colosseum.com/legal/Crypto%20World's%20Fair%20Hackathon%20Rules.pdf).
@@ -95,4 +97,4 @@ For a **no-spend policy denial**, ask the agent to request `large-transfer`. Pol
 
 The `browser-session` service costs 3.20 pathUSD and can settle without human approval. Do not request it unless you intend to spend testnet funds. Never configure the agent host to auto-approve Warden payment requests; dashboard approval is the human control.
 
-See [the demo playbook](docs/demo-playbook.md) for the CLI scenarios, [the Colosseum video guide](docs/video-production.md) for the presentation and product-demo workflow, and [SECURITY.md](SECURITY.md) for the audit guarantee and its limits.
+See the [Colosseum submission and recording materials](https://github.com/isiomaC/stalewell-docs/tree/main/hackathons/colosseum-2026/warden-pay) and [SECURITY.md](SECURITY.md) for the audit guarantee and its limits.
